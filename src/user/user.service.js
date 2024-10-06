@@ -8,6 +8,10 @@ async function createUser(newUserData) {
     // Mengganti nilai newUserData.password dengan hasil hashing tersebut.
     // Memanggil fungsi insertUser dengan newUserData sebagai argumen untuk menyimpan data pengguna baru ke dalam database.
     // Mengembalikan objek newUser yang merupakan hasil dari pemanggilan fungsi insertUser.
+    const hashedPassword = await bcrypt.hash(newUserData.password, 10);
+    newUserData.password = hashedPassword;
+    const newUser = await insertUser(newUserData);
+    return newUser;
 }
 
 async function getAllUsers() {
@@ -15,6 +19,8 @@ async function getAllUsers() {
 
     // Memanggil fungsi findUsers untuk mendapatkan seluruh data pengguna dari database.
     // Mengembalikan nilai users yang merupakan hasil dari pemanggilan fungsi findUsers.
+    const users = await findUsers();
+    return users;
 }
 
 async function getUserById(id) {
@@ -22,7 +28,8 @@ async function getUserById(id) {
 
     // Memanggil fungsi findUserById dengan id sebagai argumen untuk mendapatkan data pengguna dari database berdasarkan id.
     // Mengembalikan nilai user yang merupakan hasil dari pemanggilan fungsi findUserById.
-
+    const user = await findUserById(id);
+    return user;
 }
 
 async function editUserById(id, userData) {
@@ -32,7 +39,11 @@ async function editUserById(id, userData) {
     // Mengganti nilai userData.password dengan hasil hashing tersebut.
     // Memanggil fungsi editUser dengan id dan userData sebagai argumen untuk mengubah data pengguna di dalam database.
     // Mengembalikan objek updatedUser yang merupakan hasil dari pemanggilan fungsi editUser.
-
+    if (userData.password) {
+        userData.password = await bcrypt.hash(userData.password, 10);
+    }
+    const updatedUser = await editUser(id, userData);
+    return updatedUser;
 }
 
 async function deleteUserById(id) {
@@ -40,6 +51,8 @@ async function deleteUserById(id) {
 
     // Memanggil fungsi deleteUser dengan id sebagai argumen untuk menghapus data pengguna dari database.
     // Mengembalikan nilai deletedUser yang merupakan hasil dari pemanggilan fungsi deleteUser.
+    const deletedUser = await deleteUser(id);
+    return deletedUser;
 }
 
 module.exports = {
